@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import styled from 'styled-components';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import CartItem from "./components/CartItem";
+import { COLORS } from './constants';
+import Drawer from "./components/Drawer";
 
 const API = "https://fakestoreapi.com/products";
 
@@ -22,10 +25,38 @@ const GridList = styled.ul`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   list-style-type: none;
+  gap: 16px;
+`;
+
+const IconShop = styled.div`
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: ${COLORS.primary.navy};
+
+  &::after {
+    content: '0';
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-content: center;
+    position: absolute;
+    top: -13px;
+    right: -13px;
+    font-size: 0.925rem;
+    border: 1px solid ${COLORS.primary.navy};
+    border-radius: 50%;
+    background-color: ${COLORS.primary.navy};
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+  }
 `;
 
 function App() {
   const [products, setProducts] = useState<ItemCardType[]>([])
+  const [drawerActive, setDrawerActive] = useState(false);
 
   useEffect(() => {
     getProducts();
@@ -39,6 +70,13 @@ function App() {
 
   return (
     <Wrapper>
+      <Drawer
+        isOpen={drawerActive}
+        handleClose={setDrawerActive}
+      />
+      <IconShop onClick={() => setDrawerActive(true)}>
+        <AiOutlineShoppingCart />
+      </IconShop>
       <GridList>
         {products && products.map(item => (
           <CartItem key={item.id} item={item} />
