@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
-import { COLORS } from '../constants';
+import { ItemCardType } from '../App';
+import DrawerItem from './DrawerItem';
+import { COLORS, QUERIES } from '../constants';
 
 type DrawerOverlayProps = {
   isOpen: boolean;
@@ -22,11 +24,15 @@ const DrawerInner = styled.aside<DrawerOverlayProps>`
   position: absolute;
   top: 0;
   right: 0;
-  width: 50ch;
+  width: 100%;
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
-  transform: ${({ isOpen }) => isOpen ? 'translateX(0)' : 'translateX(50ch)'} 
+  transform: ${({ isOpen }) => isOpen ? 'translateX(0)' : 'translateX(50ch)'};
+
+  @media ${QUERIES.tabletAndUp} {
+    width: 60ch;
+  }
 `;
 
 const IconShop = styled.div`
@@ -41,16 +47,33 @@ const IconShop = styled.div`
 type DrawerProps = {
   isOpen: boolean;
   handleClose: (close: boolean) => void;
+  handleAddToCart: (clickedItem: ItemCardType) => void;
+  handleRemoveFromCart: (id: number) => void;
+  items: ItemCardType[];
 }
 
-function Drawer({ isOpen, handleClose }: DrawerProps): JSX.Element {
+function Drawer({
+  isOpen,
+  handleClose,
+  handleAddToCart,
+  handleRemoveFromCart,
+  items
+}: DrawerProps): JSX.Element {
   return (
     <DrawerOverlay isOpen={isOpen}>
       <DrawerInner isOpen={isOpen}>
         <IconShop onClick={() => handleClose(false)}>
           <AiOutlineCloseCircle />
         </IconShop>
-        drawer
+        <ul>
+          <h2>Your shopping Cart</h2>
+          {items && items.map(item => (
+            <DrawerItem
+              item={item}
+              addToCart={handleAddToCart}
+            />
+          ))}
+        </ul>
       </DrawerInner>
     </DrawerOverlay>
   )

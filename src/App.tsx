@@ -57,6 +57,9 @@ const IconShop = styled.div`
 function App() {
   const [products, setProducts] = useState<ItemCardType[]>([])
   const [drawerActive, setDrawerActive] = useState(false);
+  const [productsInDrawer, setProductsInDrawer] = useState<ItemCardType[]>([]);
+
+  console.log(productsInDrawer);
 
   useEffect(() => {
     getProducts();
@@ -68,18 +71,45 @@ function App() {
     setProducts(data);
   }
 
+  const handleAddToCart = (clickedItem: ItemCardType) => {
+    setProductsInDrawer(prev => {
+      const isItemInCart = prev.find(item => item.id === clickedItem.id);
+
+      if (isItemInCart) {
+        return prev.map(item =>
+          item.id === clickedItem.id
+            ? { ...item, amount: item.amount + 1 }
+            : item
+        )
+      }
+
+      return [...prev, { ...clickedItem, amount: 1 }]
+    })
+  };
+
+  const handleRemoveFromCart = (id: number) => {
+    console.log('delete')
+  }
+
   return (
     <Wrapper>
       <Drawer
         isOpen={drawerActive}
         handleClose={setDrawerActive}
+        handleAddToCart={handleAddToCart}
+        handleRemoveFromCart={handleRemoveFromCart}
+        items={productsInDrawer}
       />
       <IconShop onClick={() => setDrawerActive(true)}>
         <AiOutlineShoppingCart />
       </IconShop>
       <GridList>
         {products && products.map(item => (
-          <CartItem key={item.id} item={item} />
+          <CartItem
+            key={item.id}
+            item={item}
+            handleAddToCart={handleAddToCart}
+          />
         ))}
       </GridList>
     </Wrapper>

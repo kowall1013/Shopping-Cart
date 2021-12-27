@@ -2,10 +2,6 @@ import styled from 'styled-components';
 import { ItemCardType } from '../App';
 import { COLORS } from '../constants';
 
-type Props = {
-  item: ItemCardType
-};
-
 const ListItem = styled.li`
   border: 1px solid ${COLORS.primary.navy};
   border-radius: 16px 16px 0 0;
@@ -53,10 +49,14 @@ const ListItem = styled.li`
       }
     }
   }
-
 `;
 
-function CartItem({ item }: Props): JSX.Element {
+type CartItemProps = {
+  item: ItemCardType,
+  handleAddToCart: (clickedItem: ItemCardType) => void;
+};
+
+function CartItem({ item, handleAddToCart }: CartItemProps): JSX.Element {
   return (
     <ListItem>
       <img src={item.image} alt={item.title} />
@@ -64,7 +64,7 @@ function CartItem({ item }: Props): JSX.Element {
       <p>{item.description}</p>
       <div>
         <p>${item.price}</p>
-        <button>add to cart</button>
+        <button onClick={() => handleAddToCart(item)}>add to cart</button>
       </div>
     </ListItem>
   )
