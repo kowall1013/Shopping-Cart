@@ -69,8 +69,10 @@ function Drawer({
           <h2>Your shopping Cart</h2>
           {items && items.map(item => (
             <DrawerItem
+              key={item.id}
               item={item}
               addToCart={handleAddToCart}
+              removeFromCart={handleRemoveFromCart}
             />
           ))}
         </ul>

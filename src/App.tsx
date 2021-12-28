@@ -4,6 +4,7 @@ import { AiOutlineShoppingCart } from 'react-icons/ai';
 import CartItem from "./components/CartItem";
 import { COLORS } from './constants';
 import Drawer from "./components/Drawer";
+import DisplayNumberOfItems from './components/DisplayNumberOfItems';
 
 const API = "https://fakestoreapi.com/products";
 
@@ -15,7 +16,7 @@ export type ItemCardType = {
   description: string;
   image: string;
   amount: number;
-}
+};
 
 const Wrapper = styled.section`
   max-width: 1440px;
@@ -28,6 +29,8 @@ const GridList = styled.ul`
   gap: 16px;
 `;
 
+
+
 const IconShop = styled.div`
   position: fixed;
   top: 24px;
@@ -35,31 +38,12 @@ const IconShop = styled.div`
   font-size: 2rem;
   cursor: pointer;
   color: ${COLORS.primary.navy};
-
-  &::after {
-    content: '0';
-    width: 20px;
-    height: 20px;
-    display: grid;
-    place-content: center;
-    position: absolute;
-    top: -13px;
-    right: -13px;
-    font-size: 0.925rem;
-    border: 1px solid ${COLORS.primary.navy};
-    border-radius: 50%;
-    background-color: ${COLORS.primary.navy};
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-  }
 `;
 
 function App() {
   const [products, setProducts] = useState<ItemCardType[]>([])
   const [drawerActive, setDrawerActive] = useState(false);
-  const [productsInDrawer, setProductsInDrawer] = useState<ItemCardType[]>([]);
-
-  console.log(productsInDrawer);
+  const [productsInDrawer, setProductsInDrawer] = useState([] as ItemCardType[]);
 
   useEffect(() => {
     getProducts();
@@ -70,6 +54,9 @@ function App() {
     const data = await response.json();
     setProducts(data);
   }
+
+  const getTotalItems = (items: ItemCardType[]) =>
+    items.reduce((ack: number, item) => ack + item.amount, 0);
 
   const handleAddToCart = (clickedItem: ItemCardType) => {
     setProductsInDrawer(prev => {
@@ -88,7 +75,16 @@ function App() {
   };
 
   const handleRemoveFromCart = (id: number) => {
-    console.log('delete')
+    setProductsInDrawer(prev =>
+      prev.reduce((ack, item) => {
+        if (item.id === id) {
+          if (item.amount === 1) return ack;
+          return [...ack, { ...item, amount: item.amount - 1 }];
+        } else {
+          return [...ack, item]
+        }
+      }, [] as ItemCardType[])
+    )
   }
 
   return (
@@ -102,6 +98,7 @@ function App() {
       />
       <IconShop onClick={() => setDrawerActive(true)}>
         <AiOutlineShoppingCart />
+        <DisplayNumberOfItems itemsInDrawe={getTotalItems(productsInDrawer)} />
       </IconShop>
       <GridList>
         {products && products.map(item => (

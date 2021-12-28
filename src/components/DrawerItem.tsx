@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { ItemCardType } from '../App';
 
@@ -62,15 +63,14 @@ const Button = styled.button`
 type DrawerItemProps = {
   item: ItemCardType;
   addToCart: (clickedItem: ItemCardType) => void;
+  removeFromCart: (id: number) => void;
 };
 
-function DrawerItem({ item, addToCart }: DrawerItemProps): JSX.Element {
-
-  const handleItem = (operator: string): void => {
-    console.log('kwl')
-  }
+function DrawerItem({ item, addToCart, removeFromCart }: DrawerItemProps): JSX.Element {
 
   const { id, title, amount, image, price } = item;
+
+  const totalPrice = useMemo(() => price * amount, [amount, price]);
 
   return (
     <Wrapper key={id}>
@@ -79,11 +79,11 @@ function DrawerItem({ item, addToCart }: DrawerItemProps): JSX.Element {
         <PricingWrapper>
           <Price>
             <p>Price: ${price}</p>
-            <Button onClick={() => handleItem('minus')}>-</Button>
+            <Button onClick={() => removeFromCart(id)}>-</Button>
           </Price>
           <Total>{amount}</Total>
           <Price>
-            <p>Total: $total</p>
+            <p>Total: ${totalPrice.toFixed(1)}</p>
             <Button onClick={() => addToCart(item)}>+</Button>
           </Price>
         </PricingWrapper>
